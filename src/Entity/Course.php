@@ -2,26 +2,41 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiProperty;
+use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
+use App\Controller\CourseImageController;
+use Symfony\Component\HttpFoundation\File\File;
 use App\Repository\CourseRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
+/**
+ * @Vich\Uploadable
+ */
 #[ORM\Entity(repositoryClass: CourseRepository::class)]
 #[ORM\HasLifecycleCallbacks()]
 #[ApiResource(
     normalizationContext: ['groups' => ['course.read']],
-    denormalizationContext: ['groups' => ['course.write']]
+    denormalizationContext: ['groups' => ['course.write']],
 )]
 class Course
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(["course.read"])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(["course.read", "course.write"])]
     private ?string $name = null;
 
     #[ORM\Column]
@@ -30,14 +45,16 @@ class Course
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $updated_at = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(["course.read", "course.write"])]
     private ?string $slug = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $cover = null;
-
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups(["course.read", "course.write"])]
     private ?string $description = null;
+
+    #[ORM\ManyToOne]
+    private ?Image $cover = null;
 
     #[ORM\PrePersist]
     public function updatedTimestamps()
@@ -99,18 +116,6 @@ class Course
         return $this;
     }
 
-    public function getCover(): ?string
-    {
-        return $this->cover;
-    }
-
-    public function setCover(?string $cover): self
-    {
-        $this->cover = $cover;
-
-        return $this;
-    }
-
     public function getDescription(): ?string
     {
         return $this->description;
@@ -119,6 +124,18 @@ class Course
     public function setDescription(?string $description): self
     {
         $this->description = $description;
+
+        return $this;
+    }
+
+    public function getCover(): ?Image
+    {
+        return $this->cover;
+    }
+
+    public function setCover(?Image $cover): self
+    {
+        $this->cover = $cover;
 
         return $this;
     }
