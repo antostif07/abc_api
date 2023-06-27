@@ -56,7 +56,7 @@ class Image
     #[Groups(['image:read'])]
     public ?string $contentUrl = null;
 
-    #[Vich\UploadableField(mapping: "media_object", fileNameProperty: "filePath")]
+    #[Vich\UploadableField(mapping: "images", fileNameProperty: "filePath")]
     #[Assert\NotNull(groups: ['image_create'])]
     public ?File $file = null;
 

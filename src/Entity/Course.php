@@ -2,25 +2,12 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Metadata\ApiProperty;
-use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\Delete;
-use ApiPlatform\Metadata\GetCollection;
-use ApiPlatform\Metadata\Patch;
-use ApiPlatform\Metadata\Post;
-use ApiPlatform\Metadata\Put;
-use App\Controller\CourseImageController;
-use Symfony\Component\HttpFoundation\File\File;
 use App\Repository\CourseRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
-use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
-/**
- * @Vich\Uploadable
- */
 #[ORM\Entity(repositoryClass: CourseRepository::class)]
 #[ORM\HasLifecycleCallbacks()]
 #[ApiResource(
@@ -55,6 +42,11 @@ class Course
 
     #[ORM\ManyToOne]
     private ?Image $cover = null;
+
+    #[ORM\ManyToOne(inversedBy: 'courses')]
+    #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['course.read', 'course.write'])]
+    private ?Center $center = null;
 
     #[ORM\PrePersist]
     public function updatedTimestamps()
@@ -136,6 +128,18 @@ class Course
     public function setCover(?Image $cover): self
     {
         $this->cover = $cover;
+
+        return $this;
+    }
+
+    public function getCenter(): ?Center
+    {
+        return $this->center;
+    }
+
+    public function setCenter(?Center $center): self
+    {
+        $this->center = $center;
 
         return $this;
     }
