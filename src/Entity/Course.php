@@ -4,6 +4,9 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\CourseRepository;
+use App\Trait\CreatedAndUpdated;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -16,6 +19,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
 )]
 class Course
 {
+    use CreatedAndUpdated;
+    
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -26,12 +31,6 @@ class Course
     #[Groups(["course.read", "course.write"])]
     private ?string $name = null;
 
-    #[ORM\Column]
-    private ?\DateTimeImmutable $created_at = null;
-
-    #[ORM\Column(nullable: true)]
-    private ?\DateTimeImmutable $updated_at = null;
-
     #[ORM\Column(length: 255, nullable: true)]
     #[Groups(["course.read", "course.write"])]
     private ?string $slug = null;
@@ -41,6 +40,7 @@ class Course
     private ?string $description = null;
 
     #[ORM\ManyToOne]
+    #[Groups(["course.read", "course.write"])]
     private ?Image $cover = null;
 
     #[ORM\ManyToOne(inversedBy: 'courses')]
@@ -48,13 +48,15 @@ class Course
     #[Groups(['course.read', 'course.write'])]
     private ?Center $center = null;
 
-    #[ORM\PrePersist]
-    public function updatedTimestamps()
+    #[ORM\OneToMany(mappedBy: 'course', targetEntity: Level::class)]
+    #[Groups(['course.read', 'course.write'])]
+    private Collection $levels;
+
+    public function __construct()
     {
-        if($this->created_at == null){
-            $this->created_at = new \DateTimeImmutable('now');
-        }
+        $this->levels = new ArrayCollection();
     }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -68,30 +70,6 @@ class Course
     public function setName(string $name): self
     {
         $this->name = $name;
-
-        return $this;
-    }
-
-    public function getCreatedAt(): ?\DateTimeImmutable
-    {
-        return $this->created_at;
-    }
-
-    public function setCreatedAt(\DateTimeImmutable $created_at): self
-    {
-        $this->created_at = $created_at;
-
-        return $this;
-    }
-
-    public function getUpdatedAt(): ?\DateTimeImmutable
-    {
-        return $this->updated_at;
-    }
-
-    public function setUpdatedAt(?\DateTimeImmutable $updated_at): self
-    {
-        $this->updated_at = $updated_at;
 
         return $this;
     }
@@ -140,6 +118,36 @@ class Course
     public function setCenter(?Center $center): self
     {
         $this->center = $center;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Level>
+     */
+    public function getLevels(): Collection
+    {
+        return $this->levels;
+    }
+
+    public function addLevel(Level $level): self
+    {
+        if (!$this->levels->contains($level)) {
+            $this->levels->add($level);
+            $level->setCourse($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLevel(Level $level): self
+    {
+        if ($this->levels->removeElement($level)) {
+            // set the owning side to null (unless already changed)
+            if ($level->getCourse() === $this) {
+                $level->setCourse(null);
+            }
+        }
 
         return $this;
     }
