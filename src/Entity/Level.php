@@ -60,6 +60,7 @@ class Level
     public function __construct()
     {
         $this->chapters = new ArrayCollection();
+        $this->created_at = new \DateTimeImmutable('now');
     }
 
     public function getId(): ?int
@@ -155,5 +156,13 @@ class Level
         $this->degree = $degree;
 
         return $this;
+    }
+
+    #[ORM\PrePersist]
+    public function updatedTimestamps()
+    {
+        if($this->created_at == null){
+            $this->created_at = new \DateTimeImmutable('now');
+        }
     }
 }

@@ -8,11 +8,11 @@ use Symfony\Component\Serializer\Annotation\Groups;
 trait CreatedAndUpdated
 {
     #[ORM\Column]
-    #[Groups(["course.read"])]
+    #[Groups(["course.read", "level.read"])]
     private ?\DateTimeImmutable $created_at = null;
 
     #[ORM\Column(nullable: true)]
-    #[Groups(["course.read"])]
+    #[Groups(["course.read", "level.read"])]
     private ?\DateTimeImmutable $updated_at = null;
 
     public function getUpdatedAt(): ?\DateTimeImmutable

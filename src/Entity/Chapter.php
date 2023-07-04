@@ -6,20 +6,33 @@ use ApiPlatform\Metadata\ApiResource;
 use App\Repository\ChapterRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: ChapterRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    normalizationContext: ['groups' => ['chapter.read']],
+    denormalizationContext: ['groups' => ['chapter.write']]
+)]
+#[UniqueEntity(
+    fields: ["level", "degree"],
+    errorPath: 'degree',
+    message: 'This chapter degree exist for the current level.'
+    )]
 class Chapter
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['chapter.read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['chapter.read', 'chapter.write'])]
     private ?string $name = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups(['chapter.read', 'chapter.write'])]
     private ?string $content = null;
 
     #[ORM\Column]
@@ -29,11 +42,18 @@ class Chapter
     private ?\DateTimeImmutable $updated_at = null;
 
     #[ORM\Column(type: Types::SMALLINT)]
+    #[Groups(['chapter.read', 'chapter.write'])]
     private ?int $degree = null;
 
     #[ORM\ManyToOne(inversedBy: 'chapters')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['chapter.read', 'chapter.write'])]
     private ?Level $level = null;
+
+    public function __construct()
+    {
+        $this->created_at = new \DateTimeImmutable('now');
+    }
 
     public function getId(): ?int
     {
