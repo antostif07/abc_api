@@ -47,7 +47,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\GeneratedValue]
     private ?int $id = null;
 
-    #[Assert\NotBlank]
     #[Assert\Email]
     #[Groups(['user:read', 'user:create', 'user:update'])]
     #[ORM\Column(length: 180, unique: true)]
@@ -64,10 +63,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'json')]
     private array $roles = [];
 
-    #[Assert\NotBlank]
-    #[ORM\Column(length: 100)]
+    #[ORM\Column(length: 100, nullable: true)]
     #[Groups(['user:create', 'user:update', 'user:read'])]
     private ?string $name = null;
+
+    #[Assert\NotBlank]
+    #[ORM\Column(length: 30, unique: true)]
+    #[Groups(['user:create', 'user:update'])]
+    private ?string $tel = null;
 
     public function __construct()
     {
@@ -162,6 +165,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setName(string $name): self
     {
         $this->name = $name;
+
+        return $this;
+    }
+
+    public function getTel(): ?string
+    {
+        return $this->tel;
+    }
+
+    public function setTel(string $tel): self
+    {
+        $this->tel = $tel;
 
         return $this;
     }
