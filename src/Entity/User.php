@@ -69,8 +69,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[Assert\NotBlank]
     #[ORM\Column(length: 30, unique: true)]
-    #[Groups(['user:create', 'user:update'])]
-    private ?string $tel = null;
+    #[Groups(['user:create', 'user:update', 'user:read'])]
+    private ?string $phone = null;
 
     public function __construct()
     {
@@ -169,14 +169,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getTel(): ?string
+    public function getPhone(): ?string
     {
-        return $this->tel;
+        return $this->phone;
     }
 
-    public function setTel(string $tel): self
+    public function setPhone(string $phone): self
     {
-        $this->tel = $tel;
+        $this->phone = $phone;
 
         return $this;
     }
