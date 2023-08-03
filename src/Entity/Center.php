@@ -39,6 +39,10 @@ class Center
     #[Groups(["center.read", 'center.write'])]
     private ?string $description = null;
 
+    #[ORM\ManyToOne]
+    #[Groups(["center.read", 'center.write'])]
+    private ?Image $cover = null;
+
     public function __construct()
     {
         $this->courses = new ArrayCollection();
@@ -99,6 +103,18 @@ class Center
     public function setDescription(?string $description): self
     {
         $this->description = $description;
+
+        return $this;
+    }
+
+    public function getCover(): ?Image
+    {
+        return $this->cover;
+    }
+
+    public function setCover(?Image $cover): self
+    {
+        $this->cover = $cover;
 
         return $this;
     }

@@ -52,6 +52,10 @@ class Course
     #[Groups(['course.read', 'course.write'])]
     private Collection $levels;
 
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups(['course.read', 'course.write'])]
+    private ?string $briefDescription = null;
+
     public function __construct()
     {
         $this->levels = new ArrayCollection();
@@ -148,6 +152,18 @@ class Course
                 $level->setCourse(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getBriefDescription(): ?string
+    {
+        return $this->briefDescription;
+    }
+
+    public function setBriefDescription(?string $briefDescription): self
+    {
+        $this->briefDescription = $briefDescription;
 
         return $this;
     }
