@@ -50,11 +50,11 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 class Image
 {
     #[ORM\Id, ORM\Column, ORM\GeneratedValue]
-    #[Groups(['image:read', "course.read", 'level.read'])]
+    #[Groups(['image:read', "course.read", 'level.read', "center.read"])]
     private ?int $id = null;
 
     #[ApiProperty(types: ['https://schema.org/contentUrl'])]
-    #[Groups(['image:read', "course.read", 'level.read'])]
+    #[Groups(['image:read', "course.read", 'level.read', "center.read"])]
     public ?string $contentUrl = null;
 
     #[Vich\UploadableField(mapping: "images", fileNameProperty: "filePath")]

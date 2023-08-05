@@ -40,7 +40,7 @@ class Center
     private ?string $description = null;
 
     #[ORM\ManyToOne]
-    #[Groups(["center.read", 'center.write'])]
+    #[Groups(["center.read", 'center.write', 'course.read'])]
     private ?Image $cover = null;
 
     public function __construct()
