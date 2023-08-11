@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\CourseRepository;
 use App\Trait\CreatedAndUpdated;
@@ -17,6 +19,9 @@ use Symfony\Component\Serializer\Annotation\Groups;
     normalizationContext: ['groups' => ['course.read']],
     denormalizationContext: ['groups' => ['course.write']],
 )]
+#[ApiFilter(SearchFilter::class, properties: [
+    'id' => 'exact', 'center' => 'exact'
+])]
 class Course
 {
     use CreatedAndUpdated;
@@ -24,11 +29,11 @@ class Course
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(["course.read", "level.read"])]
+    #[Groups(["course.read", "level.read", 'chapter.read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(["course.read", "course.write", "level.read"])]
+    #[Groups(["course.read", "course.write", "level.read", 'chapter.read'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 255, nullable: true)]

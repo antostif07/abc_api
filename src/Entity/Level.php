@@ -29,11 +29,11 @@ class Level
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['level.read', 'course.read'])]
+    #[Groups(['level.read', 'course.read', 'chapter.read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['level.read', 'level.write', 'course.read'])]
+    #[Groups(['level.read', 'level.write', 'course.read', 'chapter.read'])]
     private ?string $name = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
@@ -50,7 +50,7 @@ class Level
 
     #[ORM\ManyToOne(inversedBy: 'levels')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['level.read', 'level.write',])]
+    #[Groups(['level.read', 'level.write', 'chapter.read'])]
     private ?Course $course = null;
 
     #[ORM\Column(type: Types::SMALLINT)]
